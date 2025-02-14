@@ -26,16 +26,36 @@ export function Header() {
 
   // Supabase Auth
   const supabase = createSupabaseClient();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
   const { session } = useContext(AuthContext);
 
+  // Sign In
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/profile`,
+      },
+    });
+
+    if (error) {
+      setMessage(error.message);
+    } else {
+      setMessage('Check your email for a Magic Link!');
+    }
+    setLoading(false);
+  };
+
+  // Sign Out
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     window.location.href = '/auth';
   };
-
-  if (!session) {
-    return <p>Loading...</p>;
-  }
 
   return (
     <header className="border-b">
@@ -57,9 +77,30 @@ export function Header() {
           <Button size="icon" variant="ghost">
             <Bell className="h-5 w-5" />
           </Button>
-          <Button>Profile</Button>
-
-          <Button onClick={handleSignOut}>Sign Out</Button>
+          
+          {!session ? (
+            <div className="auth-container">
+              <h1>Sign In / Sign Up</h1>
+              <form onSubmit={handleSignIn}>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <button type="submit" disabled={loading}>
+                  {loading ? 'Sending...' : 'Send Magic Link'}
+                </button>
+              </form>
+              {message && <p>{message}</p>}
+            </div>
+          ) : (
+            <>
+              <Button>Profile</Button>
+              <Button onClick={handleSignOut}>Sign Out</Button>
+            </>
+          )}
 
         </div>
       </div>
