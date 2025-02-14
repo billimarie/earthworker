@@ -8,6 +8,11 @@ import { Input } from "@/components/ui/input"
 import { Bell, Search } from "lucide-react"
 import type React from "react" // Added import for React
 
+// Auth
+import { useContext } from 'react';
+import { createSupabaseClient } from '@/lib/supabase';
+import { AuthContext } from '@/app/layout';
+
 export function Header() {
   const [searchQuery, setSearchQuery] = useState("")
   const router = useRouter()
@@ -17,6 +22,19 @@ export function Header() {
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
     }
+  }
+
+  // Supabase Auth
+  const supabase = createSupabaseClient();
+  const { session } = useContext(AuthContext);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/auth';
+  };
+
+  if (!session) {
+    return <p>Loading...</p>;
   }
 
   return (
@@ -40,6 +58,9 @@ export function Header() {
             <Bell className="h-5 w-5" />
           </Button>
           <Button>Profile</Button>
+
+          <Button onClick={handleSignOut}>Sign Out</Button>
+
         </div>
       </div>
     </header>

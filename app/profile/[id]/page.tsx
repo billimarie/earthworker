@@ -6,11 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BadgeList } from "@/components/badge-list"
 import { Progress } from "@/components/ui/progress"
 
-// Auth
-import { useContext } from 'react';
-import { createSupabaseClient } from '@/lib/supabase';
-import { AuthContext } from '@/app/layout';
-
 type User = {
   id: string
   name: string
