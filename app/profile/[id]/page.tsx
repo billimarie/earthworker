@@ -1,8 +1,15 @@
+"use client";
+
 import { notFound } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BadgeList } from "@/components/badge-list"
 import { Progress } from "@/components/ui/progress"
+
+// Auth
+import { useContext } from 'react';
+import { createSupabaseClient } from '@/lib/supabase';
+import { AuthContext } from '@/app/layout';
 
 type User = {
   id: string
@@ -55,7 +62,8 @@ const users: User[] = [
   },
 ]
 
-export default function ProfilePage({ params }: { params: { id: string } }) {
+export default function ProfilePage(
+  { params }: { params: { id: string } }) {
   const user = users.find((u) => u.id === params.id)
 
   if (!user) {
